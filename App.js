@@ -1,6 +1,6 @@
 import axios from "axios";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   FlatList,
   RefreshControl,
@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import {
   ActivityIndicator,
+  FAB,
   Provider,
   Snackbar,
 } from "react-native-paper";
@@ -22,6 +23,8 @@ export default function App() {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState(null);
   const [posts, setPosts] = useState(null);
+
+  const listRef = useRef()
 
   const getRedditData = async () => {
     setLoading(true);
@@ -51,6 +54,7 @@ export default function App() {
       <SafeAreaView style={tw`bg-gray-900 flex`}>
         <StatusBar style="light" />
         <FlatList
+          ref={listRef}
           style={tw`bg-gray-900 flex h-full`}
           ListHeaderComponent={() => (
             <ListHeader {...{ category, onChangeCategory }} />
@@ -70,6 +74,16 @@ export default function App() {
               onRefresh={getRedditData}
             />
           }
+        />
+        <FAB
+          icon="chevron-up"
+          style={[tw`absolute m-4 bottom-10 right-4`, {backgroundColor: API_ROUTES[category]?.color}]}
+          onPress={() => listRef?.current?.scrollToIndex({
+            animated: true, 
+            index: 0, 
+            viewPosition: 0, 
+            viewOffset: 0
+          })}
         />
         <Snackbar
           visible={snackbarVisible}

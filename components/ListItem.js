@@ -70,11 +70,12 @@ const ListItem = ({ item, setSnackbarVisible, setSnackbarMessage }) => {
           titleStyle={tw`font-semibold text-sm text-gray-400 w-4/5  pl-2`}
         />
         <Card.Content style={tw`justify-between flex-row`}>
+          {thumbnail && 
           <Image
             source={{ uri: thumbnail }}
             style={tw`w-24 h-24 rounded-xl justify-center`}
-          />
-          <Text numberOfLines={4} elipsisMode="tail" variant="titleLarge" style={tw`text-white font-semibold text-lg w-1/2`}>
+          />}
+          <Text numberOfLines={4} elipsisMode="tail" variant="titleLarge" style={[tw`text-white font-semibold text-lg`, thumbnail ? tw`w-1/2` : tw`w-full`]}>
             {title}
           </Text>
 
