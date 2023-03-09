@@ -17,16 +17,7 @@ const ListItem = ({ item, setSnackbarVisible, setSnackbarMessage }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(false);
 
-  const {
-    author,
-    created, 
-    num_comments,
-    ups, 
-    downs, 
-    url, 
-    title, 
-    thumbnail
-  } = item?.data
+  const { author, created, num_comments, ups, downs, url, title, thumbnail } = item?.data;
 
   const openWebView = () => setSelected(true);
   const closeWebView = () => setSelected(false);
@@ -62,20 +53,25 @@ const ListItem = ({ item, setSnackbarVisible, setSnackbarMessage }) => {
         onPress={openWebView}
       >
         <Card.Title
-          title={
-            author +
-            "  •  " +
-            TimeFormatter.formatUnixFromNow(created)
-          }
+          title={author + "  •  " + TimeFormatter.formatUnixFromNow(created)}
           titleStyle={tw`font-semibold text-sm text-gray-400 w-4/5  pl-2`}
         />
         <Card.Content style={tw`justify-between flex-row`}>
-          {thumbnail && 
-          <Image
-            source={{ uri: thumbnail }}
-            style={tw`w-24 h-24 rounded-xl justify-center`}
-          />}
-          <Text numberOfLines={4} elipsisMode="tail" variant="titleLarge" style={[tw`text-white font-semibold text-lg`, thumbnail ? tw`w-1/2` : tw`w-full`]}>
+          {thumbnail && (
+            <Image
+              source={{ uri: thumbnail }}
+              style={tw`w-24 h-24 rounded-xl justify-center`}
+            />
+          )}
+          <Text
+            numberOfLines={4}
+            elipsisMode="tail"
+            variant="titleLarge"
+            style={[
+              tw`text-white font-semibold text-lg`,
+              thumbnail ? tw`w-1/2` : tw`w-full`,
+            ]}
+          >
             {title}
           </Text>
 
@@ -141,10 +137,7 @@ const ListItem = ({ item, setSnackbarVisible, setSnackbarMessage }) => {
           style={tw`bg-white`}
           onPress={closeWebView}
         />
-        <WebView
-          style={tw`flex bg-gray-900`}
-          source={{ uri: url }}
-        />
+        <WebView style={tw`flex bg-gray-900`} source={{ uri: url }} />
       </Modal>
     </>
   );
