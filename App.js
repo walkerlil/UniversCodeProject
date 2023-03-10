@@ -1,7 +1,7 @@
 import axios from "axios";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState, useRef } from "react";
-import { FlatList, RefreshControl, SafeAreaView } from "react-native";
+import { FlatList, RefreshControl, SafeAreaView, Animated } from "react-native";
 import { ActivityIndicator, FAB, Provider, Snackbar } from "react-native-paper";
 import ListItem from "./components/ListItem";
 import tw from "twrnc";
@@ -19,17 +19,27 @@ export default function App() {
   const [splash, setSplashCompleted] = useState(false);
 
   const listRef = useRef();
+  const shakeAnimation = new Animated.Value(0)
+
+  const startShake = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: -10, duration: 100, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(shakeAnimation, { toValue: 0, duration: 100, useNativeDriver: true })
+    ]).start();
+ }
 
   const getRedditData = async () => {
     setLoading(true);
-    try{
-      const res = await getCategoryPosts(category)
+    try {
+      const res = await getCategoryPosts(category);
       setPosts(res?.data?.data?.children);
-      setTimeout(()=>{
+      setTimeout(() => {
         setLoading(false);
-      }, 500)
+      }, 500);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setLoading(false);
     }
   };
@@ -51,7 +61,7 @@ export default function App() {
     setTimeout(() => {
       setSplashCompleted(true);
     }, 3500);
-  }, []); 
+  }, []);
 
   if (!splash) return <SplashScreen />;
 
@@ -88,21 +98,25 @@ export default function App() {
             />
           }
         />
-        <FAB
-          icon="chevron-up"
-          style={[
-            tw`absolute m-4 bottom-10 right-4`,
-            { backgroundColor: API_ROUTES[category]?.color },
-          ]}
-          onPress={() =>
-            listRef?.current?.scrollToIndex({
-              animated: true,
-              index: 0,
-              viewPosition: 0,
-              viewOffset: 0,
-            })
-          }
-        />
+        <Animated.View>
+          <FAB
+            icon="chevron-up"
+            style={[
+              tw`absolute m-4 bottom-10 right-4`,
+              { backgroundColor: API_ROUTES[category]?.color },
+              { transform: [{translateY: shakeAnimation}] }
+            ]}
+            onPress={() =>{ 
+              startShake(), 
+              listRef?.current?.scrollToIndex({
+                animated: true,
+                index: 0,
+                viewPosition: 0,
+                viewOffset: 0,
+              })}
+            }
+          />
+        </Animated.View>
         <Snackbar
           visible={snackbarVisible}
           onDismiss={onDismissSnackBar}
