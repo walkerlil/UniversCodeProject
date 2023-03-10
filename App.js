@@ -17,6 +17,8 @@ export default function App() {
   const [snackbarMessage, setSnackbarMessage] = useState(null);
   const [posts, setPosts] = useState(null);
   const [splash, setSplashCompleted] = useState(false);
+  const [showMostRecent, setShowMostRecent] = useState(true); 
+  let reversedData = null
 
   const listRef = useRef();
   const shakeAnimation = new Animated.Value(0)
@@ -34,7 +36,8 @@ export default function App() {
     setLoading(true);
     try {
       const res = await getCategoryPosts(category);
-      setPosts(res?.data?.data?.children);
+      let reverseData = res?.data?.data?.children?.reverse()
+      setPosts(reverseData);
       setTimeout(() => {
         setLoading(false);
       }, 500);
@@ -43,6 +46,11 @@ export default function App() {
       setLoading(false);
     }
   };
+
+  if(posts){
+    reversedData = [...posts].sort((a, b) => a.data?.created - b.data?.created);
+  }
+  //I was sorting without the additional "data" level. This will now ensure the earliest posts show first. 
 
   useEffect(() => {
     getRedditData();
@@ -73,11 +81,11 @@ export default function App() {
           ref={listRef}
           style={tw`bg-gray-900 flex h-full`}
           ListHeaderComponent={() => (
-            <ListHeader {...{ category, onChangeCategory }} />
+            <ListHeader {...{ category, onChangeCategory, showMostRecent, setShowMostRecent }} />
           )}
           stickyHeaderIndices={[0]}
-          data={!loading && posts}
-          keyExtractor={(item) => item?.id}
+          data={!loading && (showMostRecent ? posts : reversedData)}
+          keyExtractor={(item) => item?.data?.id}
           ListEmptyComponent={() => (
             <ActivityIndicator
               size={"large"}
@@ -104,10 +112,9 @@ export default function App() {
             style={[
               tw`absolute m-4 bottom-10 right-4`,
               { backgroundColor: API_ROUTES[category]?.color },
-              { transform: [{translateY: shakeAnimation}] }
+              { transform: [{translateX: shakeAnimation}] }
             ]}
-            onPress={() =>{ 
-              startShake(), 
+            onPress={() =>{ startShake(), 
               listRef?.current?.scrollToIndex({
                 animated: true,
                 index: 0,

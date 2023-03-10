@@ -4,11 +4,15 @@ import { Button, Menu } from "react-native-paper";
 import tw from "twrnc";
 import API_ROUTES from "../constants/routes";
 
-export default function ListHeader({ category, onChangeCategory }) {
+export default function ListHeader({ category, onChangeCategory, showMostRecent, setShowMostRecent }) {
   const [visible, setVisible] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
+
+  const openSortMenu = () => setSortOpen(true);
+  const closeSortMenu = () => setSortOpen(false);
 
   const date = new Date();
   let hours = date.getHours();
@@ -31,6 +35,7 @@ export default function ListHeader({ category, onChangeCategory }) {
           {welcomeMessage}
         </Text>
       </View>
+      <View>
       <Menu
         visible={visible}
         onDismiss={closeMenu}
@@ -57,6 +62,36 @@ export default function ListHeader({ category, onChangeCategory }) {
           />
         ))}
       </Menu>
+      <Menu
+        visible={sortOpen}
+        onDismiss={closeSortMenu}
+        contentStyle={tw`bg-gray-800`}
+        anchor={
+          <Button
+            style={tw`self-start rounded-md`}
+            textColor={"gray"}
+            mode="text"
+            icon={'sort'}
+            onPress={openSortMenu}
+          >
+            {showMostRecent ? "Recent" : "Latest"}
+          </Button>
+        }
+      >
+        <Menu.Item
+          leadingIcon={"sort-ascending"}
+          titleStyle={{ color: 'white'}}
+          onPress={() => setShowMostRecent(true)}
+          title="Sort Most Recent"
+        />
+        <Menu.Item
+          leadingIcon={"sort-descending"}
+          titleStyle={{ color: 'white'}}
+          onPress={() => setShowMostRecent(false)}
+          title="Sort Latest"
+        />
+      </Menu>
+      </View>
     </View>
   );
 }
