@@ -14,7 +14,7 @@ export default function ListHeader({ category, onChangeCategory }) {
   let hours = date.getHours();
   let welcomeMessage =
     hours < 12
-      ? " Good Morning"
+      ? "Good Morning"
       : hours <= 18 && hours >= 12
       ? "Good Afternoon"
       : "Good Evening";

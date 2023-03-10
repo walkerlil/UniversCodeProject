@@ -8,6 +8,7 @@ import tw from "twrnc";
 import ListHeader from "./components/ListHeader";
 import API_ROUTES from "./constants/routes";
 import SplashScreen from "./components/SplashScreen";
+import getCategoryPosts from "./api/getCategoryPosts";
 
 export default function App() {
   const [category, setCategory] = useState([0]);
@@ -21,14 +22,16 @@ export default function App() {
 
   const getRedditData = async () => {
     setLoading(true);
-    const res = await axios({
-      method: "get",
-      url: API_ROUTES[category].url,
-    });
-    setPosts(res?.data?.data?.children);
-    setTimeout(()=>{
+    try{
+      const res = await getCategoryPosts(category)
+      setPosts(res?.data?.data?.children);
+      setTimeout(()=>{
+        setLoading(false);
+      }, 500)
+    } catch (error) {
+      console.log(error)
       setLoading(false);
-    }, 500)
+    }
   };
 
   useEffect(() => {
@@ -48,7 +51,7 @@ export default function App() {
     setTimeout(() => {
       setSplashCompleted(true);
     }, 3500);
-  }, []);
+  }, []); 
 
   if (!splash) return <SplashScreen />;
 
